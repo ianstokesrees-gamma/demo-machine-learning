@@ -4,7 +4,10 @@ channels:
 dependencies:
   - python
   - boto3
+  - coverage
   - flask
+  - jupyterlab
+  - nbdime
   - numpy
   - pandas
   - pytest

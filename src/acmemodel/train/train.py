@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Tuple
+from typing import Tuple, Optional
 
 import numpy as np
 import pandas as pd
@@ -22,7 +22,7 @@ SCORING = 'neg_log_loss'
 def train(estimator: SklearnEstimator,
           data: DataFrame,
           optimize: bool = False,
-          log: bool = True) -> Tuple[float, np.ndarray]:
+          log: bool = True) -> Tuple[float, np.ndarray, Optional[TrainingLogger]]:
     logger.debug(f'Training {estimator.__class__.__name__} on dataset...')
 
     X, y = split_labels(data)
@@ -44,9 +44,11 @@ def train(estimator: SklearnEstimator,
     logger.info(f'Log loss on test set: {test_log_loss:.4f}')
 
     if log:
-        log_experiment(best_estimator, data, test_log_loss, cv_log_losses)
+        log_output = log_experiment(best_estimator, data, test_log_loss, cv_log_losses)
+    else:
+        log_output = None
 
-    return test_log_loss, cv_log_losses
+    return test_log_loss, cv_log_losses, log_output
 
 
 def cross_validate(estimator: SklearnEstimator,
@@ -59,7 +61,7 @@ def cross_validate(estimator: SklearnEstimator,
 def hyperopt(estimator: SklearnEstimator,
              X: DataFrame,
              y: DataFrame,
-             param_grid: dict) -> Tuple[SklearnEstimator, np.ndarray]:
+             param_grid: dict) -> Tuple[SklearnEstimator, Optional[np.ndarray]]:
     logger.info(
         'Performing hyperparameter optimization with GridSearchCV...')
 
@@ -87,7 +89,9 @@ def evaluate(estimator: SklearnEstimator, X: DataFrame, y: DataFrame) -> float:
 def log_experiment(estimator: SklearnEstimator,
                    dataset: DataFrame,
                    test_log_loss: float,
-                   cv_log_losses: np.ndarray) -> None:
+                   cv_log_losses: np.ndarray) -> TrainingLogger:
     """Record experiment data into a dedicated directory."""
     log = TrainingLogger(estimator, dataset, test_log_loss, cv_log_losses)
     log.save()
+
+    return log
