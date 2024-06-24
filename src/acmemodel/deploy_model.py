@@ -15,8 +15,9 @@ FILENAME_TO_S3_KEY = {
 }
 
 
-def main() -> None:
-    model_id = input('Enter the ID of the model to be deployed:\n>  ')
+def main(model_id=None) -> None:
+    if not model_id:
+        model_id = input('Enter the ID of the model to be deployed:\n>  ')
     if not re.match(r'^[a-f0-9]{40}$', model_id):
         raise ValueError('Model id must be a valid sha1 hexdigest.')
 

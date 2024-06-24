@@ -1,0 +1,17 @@
+name: testing
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - boto3
+  - coverage
+  - flask
+  - jupyterlab
+  - nbdime
+  - numpy
+  - pandas
+  - pytest
+  - pytest-cov
+  - python-dotenv
+  - requests
+  - scikit-learn
